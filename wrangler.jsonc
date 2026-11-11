@@ -1,0 +1,34 @@
+// AppWatch - Cloudflare Workers configuration.
+// deploy.bat fills in "database_id" (and "account_id" when you have several accounts).
+// Everything here runs on the Cloudflare free tier: Workers, Static Assets, D1 and one Cron Trigger.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "appwatch",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-10",
+  // Lets the monitor reach other Workers on your own account/zone through their public URLs.
+  "compatibility_flags": ["global_fetch_strictly_public"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"],
+    "not_found_handling": "single-page-application"
+  },
+  // One trigger per minute. Each monitor's own polling interval is applied by the Worker.
+  "triggers": {
+    "crons": ["* * * * *"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "appwatch-db",
+      "database_id": "dd2ac89a-c71d-4535-aa73-907ce10d59f5",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
